@@ -1,3 +1,6 @@
+import sys
+sys.path.append('lib')
+
 from pydantic import BaseModel
 
 from typing import List, Dict

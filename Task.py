@@ -1,4 +1,6 @@
 
+import sys
+sys.path.append('lib')
 import os
 import praw
 from langchain_openai import AzureChatOpenAI

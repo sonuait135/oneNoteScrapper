@@ -1,5 +1,6 @@
 
-
+import sys
+sys.path.append('lib')
 from crewai_tools import Tool, BaseTool
 import praw
 from datetime import datetime, timedelta

@@ -1,3 +1,5 @@
+import sys
+sys.path.append('lib')
 
 import os
 from sendgrid import SendGridAPIClient
