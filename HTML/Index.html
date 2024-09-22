@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Response</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            /* max-width: 800px; */
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .btn {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        #output {
+            margin-top: 20px;
+        }
+
+        .hidden {
+            display: none!important;
+        }
+
+        .customdiv {
+            display: inline-block;
+            margin-left: 50px;
+        }
+
+        /* #loading {
+            display: none;
+            font-size: 20px;
+            color: #333;
+        } */
+
+        #loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Spinner or loading text styles */
+        .spinner {
+            color: white;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Customer Feedback</h1>
+
+        <div id="checkboxForm">
+            <label>
+                <input type="radio" id="chkReddit" name="type" onchange="toggleTextbox(1)">
+                Reddit
+            </label>
+            <div id="dvReddit" class="hidden customdiv">
+                <br><br>
+                Reddit Subject : <input type="text" id="txtRedditSubject" placeholder="Reddit Subject">
+            </div>
+            
+            <br><br>
+            <label>
+                <input type="radio" id="chkGooglePlay" name="type"  onchange="toggleTextbox(2)">
+                Google Play Store
+            </label>
+
+            <div id="dvGooglePlay" class="hidden customdiv">
+                <br><br>
+                Google Play Store APP ID : <input type="text" id="txtGooglePlay" placeholder="Google Play Store APP ID">
+            </div>
+    
+            <br><br>
+
+            <label></label>
+                Data For Number Of Days
+            </label>
+            <input type="number" id="txtNoOfDays" class="" placeholder="Number Of Days">
+    
+            <button class="btn" onclick="fetchData()">Get Customer Feedback</button>
+        </div>
+
+        
+       <!-- Fullscreen loading spinner -->
+    <div id="loading">
+        <div class="spinner">Loading... Please wait</div>
+    </div>
+
+        <div id="output">
+            <table id="dataTable">
+                <thead>
+                    <tr>
+                        <th>Comment Link</th>
+                        <th>Comment Summary</th>
+                        <th>Is Critical</th>
+                        <th>Post Date</th>
+                        <th>Post Link</th>
+                        <th>Post Title</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- API data will be dynamically inserted here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+
+        function toggleTextbox(num) {
+            if(document.getElementById('chkReddit').checked)
+            {
+                document.getElementById('dvReddit').classList.remove('hidden');
+                document.getElementById('dvGooglePlay').classList.add('hidden');
+            }
+
+            if(document.getElementById('chkGooglePlay').checked)
+            {
+                document.getElementById('dvGooglePlay').classList.remove('hidden');
+                document.getElementById('dvReddit').classList.add('hidden');
+            }
+            
+        }
+
+        async function fetchData() {
+
+            document.getElementById('loading').style.display = 'flex';
+            const apiUrl = 'http://localhost:7071/api/processscrapper';//'http://127.0.0.1:8000/process-response'; // Sample API endpoint
+
+            const data = {
+                isReddit: document.getElementById('chkReddit').checked,
+                redditSubject: document.getElementById('txtRedditSubject').value,
+                isGooglePlayStore: document.getElementById('chkGooglePlay').checked,
+                googlePlayStoreSubject: document.getElementById('txtGooglePlay').value,
+                noOfDays: document.getElementById('txtNoOfDays').value
+            };
+
+            console.log(data)
+            try {
+                // Send data to API
+                fetch(apiUrl, {
+                    method: 'Post',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Clear previous data
+                    const tableBody = document.querySelector("#dataTable tbody");
+                    tableBody.innerHTML = '';
+
+                    // Insert new data into table
+                    data["json_dict"]["reddit"].forEach(user => {
+                        const row = `<tr>
+                                        <td><a href="${user.comment_link}" target="_blank">Link</a></td>
+                                        <td>${user.comment_summary}</td>
+                                        <td>${user.critical}</td>
+                                        <td>${user.post_date}</td>
+                                        <td><a href="${user.post_link}" target="_blank">Post Link</a></td>
+                                        <td>${user.post_title}</td>
+                                    </tr>
+                                    </tr>`;
+                        tableBody.innerHTML += row;
+                    });
+                    document.getElementById('loading').style.display = 'none';
+                })
+                .catch(error => {
+                    document.getElementById('loading').style.display = 'none';
+                    console.error('Error:', error);
+                    alert('Failed to submit the form.');
+                });
+                
+            } catch (error) {
+                console.error("Error fetching data: ", error);
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+    </script>
+
+</body>
+</html>
