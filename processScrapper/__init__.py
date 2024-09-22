@@ -1,6 +1,3 @@
-import sys
-sys.path.append('lib')
-import logging
 
 import azure.functions as func
 import logging
