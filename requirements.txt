@@ -1,0 +1,6 @@
+praw
+langchain-openai
+crewai
+crewai-tools
+google_play_scraper
+sendgrid

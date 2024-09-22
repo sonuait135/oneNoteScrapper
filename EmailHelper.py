@@ -1,12 +1,9 @@
-import sys
-sys.path.append('lib')
-
 import os
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 
 # Your SendGrid API key
-SENDGRID_API_KEY = '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'
+SENDGRID_API_KEY = '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'
 TO_EMAIL = 'sonubhandari@microsoft.com'
 FROM_EMAIL='sonuait135@gmail.com'
 

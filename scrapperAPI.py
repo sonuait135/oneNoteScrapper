@@ -1,7 +1,5 @@
 
 # Create a Crew to execute the task
-import sys
-sys.path.append('lib')
 from fastapi.encoders import jsonable_encoder
 
 
